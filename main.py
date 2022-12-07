@@ -1,5 +1,5 @@
-# from file import Class
+from menu import Menu
 
 if __name__ == "__main__":
-    # class = Class()
-    # class.mainloop()
+    menu = Menu()
+    menu.mainloop()
