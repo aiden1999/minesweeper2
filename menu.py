@@ -35,4 +35,3 @@ class Menu(tk.Tk):
         hell_radiobutton.pack(side="left")
         difficulty_frame.pack()
         
-
