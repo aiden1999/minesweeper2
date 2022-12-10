@@ -1,16 +1,18 @@
 import tkinter as tk
+from tkinter import ttk
 import math
-import PIL
 
 class GameWindow(tk.Toplevel):
     def __init__(self, rows, cols, difficulty):
 
         super().__init__()
         
-        # mine image
-        white_mine = Image.open("<assets/white_mine.png>")
-        mine_count_img = ImageTk.PhotoImage(white_mine)
-        mine_count_img.pack()
+        self.title = "Minesweeper"
+        
+        self.mine_count_img = tk.PhotoImage(file="./assets/white_mine.png")
+        tk.Label(self, image=self.mine_count_img).pack()
+        
+        
         # mine counter
         
         
@@ -31,6 +33,7 @@ class MinesweeperSolution(list[list]):
     
     
 def calculate_mines(rows, cols, difficulty):
+    mine_percentage = None
     match difficulty:
         case "easy":
             mine_percentage = 0.1

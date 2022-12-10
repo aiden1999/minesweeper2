@@ -10,8 +10,8 @@ class Menu(tk.Tk):
         self.difficulty = tk.StringVar(value="1")
         self.title("Minesweeper - Game Setup")
         self.configure(bg="#282a36")
-        self.rows_n = None
-        self.cols_n = None
+        self.rows_n = tk.IntVar()
+        self.cols_n = tk.IntVar()
         
         menu_instructions = tk.Label(self, text="Choose game options",bg="#282a36", fg="#f8f8f2")
         menu_instructions.pack()
