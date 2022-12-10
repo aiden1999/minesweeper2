@@ -1,6 +1,6 @@
 import tkinter as tk
 import math
-from PIL import Image, ImageTk
+import PIL
 
 class GameWindow(tk.Toplevel):
     def __init__(self, rows, cols, difficulty):
