@@ -8,17 +8,21 @@ class GameWindow(tk.Toplevel):
         super().__init__()
         
         self.title = "Minesweeper"
+        self.configure(bg = "#282a36")
         
+        mine_count_frame = tk.Frame(self, bg="#282a36")
         self.mine_count_img = tk.PhotoImage(file="./assets/white_mine.png")
-        tk.Label(self, image=self.mine_count_img).pack()
-        
-        
+        mine_count_img_label = tk.Label(mine_count_frame, image=self.mine_count_img, bg="#282a36")
+        mine_count_img_label.grid(row=0, column=0)
+        self.mine_count = tk.Label(mine_count_frame, text="this will be a number", fg="#f8f8f2", bg="#282a36")
+        self.mine_count.grid(row=0, column=1)
+        mine_count_frame.pack()
         # mine counter
         
         
 
 class MinesweeperGrid():
-    def __init__(self) -> None:
+    def __init__(self, rows, cols) -> None:
         pass
     
 
