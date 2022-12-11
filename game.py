@@ -29,6 +29,8 @@ class GameWindow(tk.Toplevel):
         self.game_cells = [[tk.Label(game_grid) for i in range(self.cols)] for i in range(self.rows)]
         for x in range(self.cols):
             for y in range(self.rows):
+                btn_text = row_col_to_rc(y, x, cols)  # testing
+                self.game_cells[y][x].configure(text=btn_text)  # testing
                 self.game_cells[y][x].configure(height=1, width=2, bg="#21222b")
                 self.game_cells[y][x].grid(row=y, column=x, padx=1, pady=1)
                 self.game_cells[y][x].bind("<Button-1>", lambda event, col=x, row=y: self.left_click(row, col))
@@ -59,10 +61,11 @@ class GameWindow(tk.Toplevel):
                         for cell in adj_cells:
                             adj_row, adj_col = rc_to_row_col(cell, self.cols)
                             self.game_cells[adj_col][adj_row].configure(bg=self.cleared_colour)
-                            if self.solution[adj_col][adj_row] == 0:
+                            rc_adj = row_col_to_rc(adj_row, adj_col, self.cols)
+                            if self.solution[rc_adj] == 0:
                                 check_again = True
                             else:
-                                self.show_number(adj_row, adj_col, self.solution[adj_col][adj_row])
+                                self.show_number(adj_row, adj_col, self.solution[rc_adj])
                                 
     
     def show_number(self, row, col, value):
@@ -102,29 +105,30 @@ def calculate_mines(rows: int, cols: int, difficulty: str) -> int:
     return total_mines
 
 
-def generate_puzzle(initial_row: int, initial_col: int, rows: int, cols: int, mine_total: int) -> list[list[int]]:
-    sln = [[0 for i in range(cols)] for i in range(rows)]
+def generate_puzzle(initial_row: int, initial_col: int, rows: int, cols: int, mine_total: int) -> list[int]:
+    sln = [0 for i in range(cols * rows)]
     initial_adj = adj_rc(initial_row, initial_col, rows, cols)
     initial_rc = row_col_to_rc(initial_row, initial_col, cols)
     initial_adj.append(initial_rc)
     while mine_total > 0:
         rc_random = random.randrange(0, rows * cols)
-        row_random, col_random = rc_to_row_col(rc_random, cols)
+        print(sln[rc_random])  # testing
+        print(rc_random)
         if rc_random in initial_adj:
             pass
-        elif sln[col_random][row_random] == 9:
+        elif sln[rc_random] == 9:
             pass
         else:
-            sln[col_random][row_random] = 9
+            sln[rc_random] = 9
             mine_total = mine_total - 1
     for x in range(cols):
         for y in range(rows):
-            if sln[y][x] != 9:
+            current_rc = row_col_to_rc(y, x, cols)
+            if sln[current_rc] != 9:
                 adj_cells = adj_rc(y, x, rows, cols)
                 for cell in adj_cells:
-                    adj_row, adj_col = rc_to_row_col(cell, cols)
-                    if sln[adj_col][adj_row] == 9:
-                        sln[y][x] = sln[y][x] + 1
+                    if sln[cell] == 9:
+                        sln[current_rc] = sln[current_rc] + 1
     return sln
  
  
