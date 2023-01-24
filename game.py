@@ -25,12 +25,17 @@ class GameWindow(tk.Toplevel):
         self.mine_counter = tk.Label(mine_count_frame, text=self.mine_total, fg="#f8f8f2", bg="#282a36", font=("Comic Sans MS", "20"))
         self.mine_counter.grid(row=0, column=1)
         mine_count_frame.pack()
+        
+        self.num_imgs = []
+        for num in range(8):
+            file_address = "./assets/number_" + str(num + 1) + ".png"
+            self.num_imgs.append(tk.PhotoImage(file=file_address))
 
         game_grid = tk.Frame(self, bg="#282a36")
         self.game_cells = [tk.Label(game_grid) for i in range(self.total_cells)]
         for cell in range(self.total_cells):
             y, x = rc_to_row_col(cell, self.cols)
-            self.game_cells[cell].configure(height=1, width=2, bg="#21222b")
+            self.game_cells[cell].configure(height=2, width=5, bg="#21222b")
             self.game_cells[cell].grid(row=y, column=x, padx=1, pady=1)
             self.game_cells[cell].bind("<Button-1>", lambda event, cell=cell: self.on_left_click(cell))
             self.game_cells[cell].bind("<Button-2>", lambda event, cell=cell: self.on_right_click(cell))
@@ -42,7 +47,7 @@ class GameWindow(tk.Toplevel):
         
     def on_left_click(self, cell: int):
         if self.initial_click:
-            self.solution = generate_puzzle(cell, self.rows, self.cols, self.mine_total)
+            self.solution = generate_puzzle(cell, self.rows, self.cols, self.mine_total, self.total_cells)
             self.game_cells[cell].configure(bg=self.cleared_colour)
             self.blank_clear()
             self.initial_click = False
@@ -59,7 +64,7 @@ class GameWindow(tk.Toplevel):
         while check_again:
             check_again = False
             for cell in range(self.total_cells):
-                if (self.game_cells[cell].cget("bg") == self.cleared_colour) and (self.game_cells[cell].cget("image") == None):
+                if (self.game_cells[cell].cget("bg") == self.cleared_colour) and (self.solution[cell] == 0):
                     adj_cells = adj_rc(cell, self.rows, self.cols)
                     for adj_cell in adj_cells:
                         self.game_cells[adj_cell].configure(bg=self.cleared_colour)
@@ -70,8 +75,7 @@ class GameWindow(tk.Toplevel):
                                 
     
     def show_number(self, cell, value):
-        file_address = "./assets/number_" + str(value) + ".png"
-        num_img = tk.PhotoImage(file=file_address)
+        num_img = self.num_imgs[value - 1]
         self.game_cells[cell].configure(image=num_img)
                             
     
@@ -90,29 +94,28 @@ def calculate_mines(total_cells: int, difficulty: str) -> int:
     return total_mines
 
 
-def generate_puzzle(initial_cell: int, rows: int, cols: int, mine_total: int) -> list[int]:
+def generate_puzzle(initial_cell: int, rows: int, cols: int, mine_total: int, total_cells: int) -> list[int]:
     sln = [0 for i in range(cols * rows)]
     initial_adj = adj_rc(initial_cell, rows, cols)
     initial_adj.append(initial_cell)
-    while mine_total > 0:
-        rc_random = random.randrange(0, rows * cols)
-        print(sln[rc_random])  # testing
-        print(rc_random)
+    mines_remaining = mine_total
+    while mines_remaining > 0:
+        rc_random = random.randrange(0, total_cells)
         if rc_random in initial_adj:
             pass
         elif sln[rc_random] == 9:
             pass
         else:
             sln[rc_random] = 9
-            mine_total = mine_total - 1
-    for x in range(cols):
-        for y in range(rows):
-            current_rc = convert_row_col_to_rc(y, x, cols)
-            if sln[current_rc] != 9:
-                adj_cells = adj_rc(y, x, rows, cols)
-                for cell in adj_cells:
-                    if sln[cell] == 9:
-                        sln[current_rc] = sln[current_rc] + 1
+            mines_remaining = mines_remaining - 1
+    for cell in range(total_cells):
+        if sln[cell] != 9:
+            adj_cells = adj_rc(cell, rows, cols)
+            for adj_cell in adj_cells:
+                if sln[adj_cell] == 9:
+                    sln[cell] = sln[cell] + 1
+    print("solution generated")  # testing
+    print(sln)  # testing
     return sln
  
  
